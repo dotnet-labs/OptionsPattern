@@ -1,20 +1,20 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using MyLibrary;
 
-namespace MyLibrary.WebApp
+var builder = WebApplication.CreateBuilder(args);
+// Add services to the container.
+builder.Services.AddLogging(c => c.AddConsole());
+builder.Services.AddMyService(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    options.Option1 = "100 push-ups";
+    options.Option2 = true;
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+var app = builder.Build();
+
+app.MapGet("/", async (HttpContext context, IMyService service) =>
+{
+    service.DoWork();
+    await context.Response.WriteAsync("Hello World!");
+});
+
+app.Run();

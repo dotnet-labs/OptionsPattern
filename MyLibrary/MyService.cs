@@ -1,38 +1,28 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace MyLibrary
+namespace MyLibrary;
+
+public interface IMyService
 {
-    public interface IMyService
+    void DoWork();
+}
+
+public class MyService(ILogger<MyService> logger, IOptions<MyServiceOptions> options) : IMyService
+{
+    private readonly string _option1 = options.Value.Option1;
+    private readonly bool _option2 = options.Value.Option2;
+    private readonly int _option3 = options.Value.Option3;
+
+    public void DoWork()
     {
-        void DoWork();
-    }
-
-    public class MyService : IMyService
-    {
-        private readonly ILogger<MyService> _logger;
-        private readonly string _option1;
-        private readonly bool _option2;
-        private readonly int _option3;
-
-        public MyService(ILogger<MyService> logger, IOptions<MyServiceOptions> options)
+        logger.LogInformation("Begin workouts...");
+        logger.LogInformation("{o}", _option1);
+        if (_option2)
         {
-            _logger = logger;
-            _option1 = options.Value.Option1;
-            _option2 = options.Value.Option2;
-            _option3 = options.Value.Option3;
+            logger.LogInformation("100 sit-ups");
         }
-
-        public void DoWork()
-        {
-            _logger.LogInformation("Begin workouts...");
-            _logger.LogInformation(_option1);
-            if (_option2)
-            {
-                _logger.LogInformation("100 sit-ups");
-            }
-            _logger.LogInformation($"Repeat {_option3} times.");
-            _logger.LogInformation("Done.");
-        }
+        logger.LogInformation("Repeat {o} times.", _option3);
+        logger.LogInformation("Done.");
     }
 }
